@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>🌈 小学数学乐园</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.30);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --glass-blur: blur(16px);
+            --primary: #6C5CE7;
+            --secondary: #A29BFE;
+            --accent: #FD79A8;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --radius: 24px;
+            --radius-sm: 14px;
+            --transition: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #a8c0ff 0%, #3f2b96 50%, #f093fb 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+        .bg-orb--1 {
+            width: 300px;
+            height: 300px;
+            background: #f093fb;
+            top: -80px;
+            right: -60px;
+        }
+        .bg-orb--2 {
+            width: 400px;
+            height: 400px;
+            background: #4facfe;
+            bottom: -120px;
+            left: -100px;
+            animation-delay: -4s;
+        }
+        .bg-orb--3 {
+            width: 200px;
+            height: 200px;
+            background: #fdcb6e;
+            top: 40%;
+            left: 60%;
+            animation-delay: -8s;
+        }
+
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(40px, -30px) scale(1.1);
+            }
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+            height: 98vh;
+            max-height: 98vh;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 16px 16px;
+            scroll-behavior: smooth;
+        }
+        .content-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .content-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .content-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .bottom-nav {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 8px 0 12px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            z-index: 20;
+            gap: 2px;
+            min-height: 64px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all var(--transition);
+            min-width: 44px;
+            position: relative;
+        }
+        .nav-item .nav-icon {
+            font-size: 22px;
+            line-height: 1.2;
+            transition: transform var(--transition);
+        }
+        .nav-item .nav-label {
+            font-size: 10px;
+            opacity: 0.8;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .nav-item:active {
+            transform: scale(0.92);
+        }
+        .nav-item.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.20);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+        }
+        .nav-item.active .nav-icon {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .page {
+            display: none;
+            animation: pageFadeIn 0.45s ease forwards;
+        }
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(18px) scale(0.97);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            padding: 16px 18px;
+            transition: all var(--transition);
+        }
+        .glass-card:hover {
+            transform: translateY(-2px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 页面头部：仅用于需要返回的子页面（闯关、游戏、报告） */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .page-header .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
+            flex-shrink: 0;
+        }
+        .page-header .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-2px);
+        }
+        .page-header .header-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .page-header .header-title span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 普通页面标题（无返回按钮） */
+        .page-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-title span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        .welcome-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .welcome-text {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-text small {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.8;
+            display: block;
+        }
+        .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fdcb6e, #f093fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: transform var(--transition);
+            cursor: pointer;
+        }
+        .avatar:active {
+            transform: scale(0.9) rotate(-8deg);
+        }
+
+        .progress-wrap {
+            margin: 10px 0 16px;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.20);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #fdcb6e, #f093fb, #6C5CE7);
+            border-radius: 20px;
+            transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px 4px;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: var(--radius-sm);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all var(--transition);
+            cursor: default;
+        }
+        .stat-item:active {
+            transform: scale(0.94);
+        }
+        .stat-number {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 400;
+        }
+
+        .entry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0 10px;
+        }
+        .entry-card {
+            padding: 20px 8px;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .entry-card:active {
+            transform: scale(0.94);
+        }
+        .entry-card .entry-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .entry-card .entry-name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 18px;
+        }
+        .entry-card .entry-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+        .entry-card.challenge {
+            background: rgba(108, 92, 231, 0.20);
+            border-color: rgba(108, 92, 231, 0.3);
+        }
+        .entry-card.game {
+            background: rgba(253, 203, 110, 0.15);
+            border-color: rgba(253, 203, 110, 0.25);
+        }
+
+        .continue-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .continue-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .continue-item:active {
+            transform: scale(0.97);
+        }
+        .continue-item .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .continue-item .left .icon {
+            font-size: 28px;
+        }
+        .continue-item .left .info .title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 15px;
+        }
+        .continue-item .left .info .desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+        .continue-item .arrow {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            transition: transform var(--transition);
+        }
+        .continue-item:hover .arrow {
+            transform: translateX(4px);
+            color: #fff;
+        }
+
+        .question-box {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-sm);
+            padding: 24px 16px;
+            text-align: center;
+            margin: 8px 0 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .question-box .q-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+        .question-box .q-text {
+            font-size: 44px;
+            font-weight: 800;
+            color: #fff;
+            margin: 6px 0 2px;
+            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+        }
+        .question-box .q-hint {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .option-btn {
+            padding: 16px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+        }
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .option-btn:active {
+            transform: scale(0.94);
+        }
+        .option-btn.correct {
+            background: rgba(0, 184, 148, 0.5);
+            border-color: #00B894;
+            box-shadow: 0 0 30px rgba(0, 184, 148, 0.3);
+            animation: popCorrect 0.5s ease;
+        }
+        .option-btn.wrong {
+            background: rgba(255, 107, 107, 0.5);
+            border-color: #FF6B6B;
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+            animation: shakeWrong 0.45s ease;
+        }
+        @keyframes popCorrect {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.12);
+            }
+        }
+        @keyframes shakeWrong {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            20% {
+                transform: translateX(-12px);
+            }
+            40% {
+                transform: translateX(12px);
+            }
+            60% {
+                transform: translateX(-8px);
+            }
+            80% {
+                transform: translateX(8px);
+            }
+        }
+        .feedback-area {
+            text-align: center;
+            padding: 12px;
+            min-height: 56px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            transition: all var(--transition);
+        }
+        .feedback-area .fb-emoji {
+            font-size: 36px;
+            display: block;
+        }
+
+        .knowledge-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .knowledge-item {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .knowledge-item:active {
+            transform: scale(0.97);
+        }
+        .knowledge-item .ki-icon {
+            font-size: 30px;
+        }
+        .knowledge-item .ki-content {
+            flex: 1;
+        }
+        .knowledge-item .ki-content .ki-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 15px;
+        }
+        .knowledge-item .ki-content .ki-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .knowledge-item .ki-arrow {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 18px;
+            transition: transform var(--transition);
+        }
+        .knowledge-item:hover .ki-arrow {
+            transform: rotate(90deg);
+            color: #fff;
+        }
+        .knowledge-detail {
+            margin-top: 8px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid #fdcb6e;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            display: none;
+            animation: pageFadeIn 0.3s ease;
+        }
+        .knowledge-detail.open {
+            display: block;
+        }
+
+        /* ===== 练习乐园多级样式 ===== */
+        .practice-level-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .practice-level-card {
+            padding: 20px 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .practice-level-card:active {
+            transform: scale(0.94);
+        }
+        .practice-level-card .level-icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .practice-level-card .level-name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 16px;
+        }
+        .practice-level-card .level-desc {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 2px;
+        }
+        .practice-level-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .practice-question {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+        }
+        .practice-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .practice-opt {
+            padding: 14px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.10);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: center;
+        }
+        .practice-opt:active {
+            transform: scale(0.93);
+        }
+        .practice-opt.selected-correct {
+            background: rgba(0, 184, 148, 0.4);
+            border-color: #00B894;
+        }
+        .practice-opt.selected-wrong {
+            background: rgba(255, 107, 107, 0.4);
+            border-color: #FF6B6B;
+        }
+        .practice-opt.show-correct {
+            background: rgba(0, 184, 148, 0.25);
+            border-color: #00B894;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .game-card {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-sm);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .game-card:active {
+            transform: scale(0.92);
+        }
+        .game-card.matched {
+            background: rgba(0, 184, 148, 0.25);
+            border-color: #00B894;
+            transform: scale(0.92);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .game-card.selected {
+            background: rgba(108, 92, 231, 0.4);
+            border-color: #6C5CE7;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(108, 92, 231, 0.3);
+        }
+        .game-card .card-emoji {
+            font-size: 34px;
+        }
+        .game-card.wrong {
+            background: rgba(255, 107, 107, 0.4);
+            border-color: #FF6B6B;
+            animation: shakeWrong 0.4s ease;
+        }
+
+        .game-score {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            padding: 8px;
+        }
+        .game-score strong {
+            color: #fdcb6e;
+            font-size: 22px;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .achieve-item {
+            text-align: center;
+            padding: 14px 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all var(--transition);
+        }
+        .achieve-item .ach-icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 2px;
+            transition: filter 0.3s, opacity 0.3s;
+        }
+        .achieve-item .ach-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+        }
+        .achieve-item.locked .ach-icon {
+            opacity: 0.3;
+            filter: grayscale(0.8);
+        }
+        .achieve-item.unlocked {
+            animation: unlockPulse 0.6s ease;
+            border-color: rgba(253, 203, 110, 0.4);
+            background: rgba(253, 203, 110, 0.08);
+        }
+        .achieve-item.unlocked .ach-icon {
+            opacity: 1;
+            filter: grayscale(0);
+        }
+        @keyframes unlockPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+                box-shadow: 0 0 30px rgba(253, 203, 110, 0.3);
+            }
+        }
+
+        .parent-card {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .parent-card .pc-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .parent-card .pc-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .toggle-track .toggle-thumb {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .toggle-track.active {
+            background: rgba(0, 184, 148, 0.5);
+            border-color: #00B894;
+        }
+        .toggle-track.active .toggle-thumb {
+            left: 22px;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35);
+            transition: all var(--transition);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .btn-primary:active {
+            transform: scale(0.94);
+            box-shadow: 0 2px 12px rgba(108, 92, 231, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 92, 231, 0.45);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #00B894, #00C9A7);
+            box-shadow: 0 4px 20px rgba(0, 184, 148, 0.35);
+        }
+        .btn-back-small {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
+            display: inline-block;
+        }
+        .btn-back-small:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .star-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 30px;
+            animation: starFly 1s ease-out forwards;
+        }
+        @keyframes starFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(360deg);
+            }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+            }
+        }
+
+        /* 报告页面 */
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+        .report-item:last-child {
+            border-bottom: none;
+        }
+        .report-item .label {
+            font-weight: 400;
+            opacity: 0.7;
+        }
+        .report-item .value {
+            font-weight: 600;
+            color: #fdcb6e;
+        }
+
+        /* ===== 响应式适配 ===== */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 720px;
+                height: 92vh;
+            }
+            .content-scroll {
+                padding: 30px 28px 16px;
+            }
+            .game-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
+            .achievement-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+            .stats-grid {
+                gap: 14px;
+            }
+            .option-btn {
+                font-size: 32px;
+                padding: 20px;
+            }
+            .question-box .q-text {
+                font-size: 52px;
+            }
+            .page-header .header-title {
+                font-size: 26px;
+            }
+            .nav-item .nav-label {
+                font-size: 12px;
+            }
+            .nav-item .nav-icon {
+                font-size: 26px;
+            }
+            .entry-card {
+                padding: 28px 12px;
+            }
+            .entry-card .entry-icon {
+                font-size: 48px;
+            }
+            .entry-card .entry-name {
+                font-size: 22px;
+            }
+            .bottom-nav {
+                padding: 10px 0 14px;
+                min-height: 72px;
+            }
+            .practice-level-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 16px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                max-width: 880px;
+                height: 90vh;
+            }
+            .content-scroll {
+                padding: 36px 36px 16px;
+            }
+            .achievement-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .game-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 16px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .option-btn {
+                font-size: 38px;
+                padding: 24px;
+            }
+            .question-box .q-text {
+                font-size: 60px;
+            }
+            .entry-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .content-scroll {
+                padding: 14px 10px 10px;
+            }
+            .page-header .header-title {
+                font-size: 18px;
+            }
+            .page-header .header-title span {
+                font-size: 12px;
+                padding: 2px 10px;
+            }
+            .question-box .q-text {
+                font-size: 34px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            .stat-number {
+                font-size: 20px;
+            }
+            .game-grid {
+                gap: 6px;
+            }
+            .achievement-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .option-btn {
+                font-size: 22px;
+                padding: 12px;
+            }
+            .nav-item .nav-label {
+                font-size: 9px;
+            }
+            .nav-item .nav-icon {
+                font-size: 18px;
+            }
+            .entry-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .entry-card .entry-icon {
+                font-size: 30px;
+            }
+            .entry-card .entry-name {
+                font-size: 15px;
+            }
+            .bottom-nav {
+                min-height: 56px;
+                padding: 6px 0 10px;
+            }
+            .page-header .btn-back {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+            .practice-level-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .practice-level-card .level-icon {
+                font-size: 28px;
+            }
+            .practice-level-card .level-name {
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 360px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .achievement-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .practice-level-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        #celebrationToast {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(253, 203, 110, 0.20);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(253, 203, 110, 0.3);
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            animation: pageFadeIn 0.5s ease;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
+    <div class="app-container" id="app">
+
+        <div class="content-scroll" id="contentScroll">
+
+            <!-- ========== 首页 ========== -->
+            <div class="page active" data-page="home">
+                <div class="welcome-row">
+                    <div class="welcome-text">
+                        🌟 小数学家
+                        <small>今天也要加油哦！</small>
+                    </div>
+                    <div class="avatar" id="avatarBtn">🧒</div>
+                </div>
+
+                <div class="progress-wrap glass-card" style="padding:12px 16px;">
+                    <div class="progress-header">
+                        <span>📚 学习进度</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number" id="starCount">0</span>
+                        <span class="stat-label">⭐ 星星</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="levelCount">0</span>
+                        <span class="stat-label">🏆 闯关</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="dayCount">0</span>
+                        <span class="stat-label">📅 连续天数</span>
+                    </div>
+                </div>
+
+                <div class="entry-grid">
+                    <!-- 闯关挑战 → 每日挑战 -->
+                    <div class="entry-card challenge" onclick="navigateTo('challenge')">
+                        <span class="entry-icon">⚔️</span>
+                        <div class="entry-name">每日挑战</div>
+                        <div class="entry-desc">20以内加法</div>
+                    </div>
+                    <div class="entry-card game" onclick="navigateTo('game')">
+                        <span class="entry-icon">🎮</span>
+                        <div class="entry-name">趣味游戏</div>
+                        <div class="entry-desc">连连看配对</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <span style="color:#fff;font-weight:600;font-size:16px;">🚀 继续学习</span>
+                        <span style="color:rgba(255,255,255,0.4);font-size:12px;">查看全部 →</span>
+                    </div>
+                    <div class="continue-grid">
+                        <div class="continue-item" onclick="navigateTo('challenge')">
+                            <div class="left">
+                                <span class="icon">➕</span>
+                                <div class="info">
+                                    <div class="title">20以内的加法</div>
+                                    <div class="desc">上次学到：9 + 6 = ?</div>
+                                </div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                        <div class="continue-item" onclick="navigateTo('knowledge')">
+                            <div class="left">
+                                <span class="icon">🔷</span>
+                                <div class="info">
+                                    <div class="title">认识图形</div>
+                                    <div class="desc">上次学到：长方形</div>
+                                </div>
+                            </div>
+                            <span class="arrow">›</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="celebrationToast"></div>
+            </div>
+
+            <!-- ========== 闯关页面 (每日挑战) ========== -->
+            <div class="page" data-page="challenge">
+                <div class="page-header">
+                    <button class="btn-back" onclick="navigateTo('home')">← 返回</button>
+                    <div class="header-title">⚔️ 每日挑战 <span>第 1 / 5 关</span></div>
+                </div>
+                <div class="subtitle">20以内的加法 · 用你的智慧闯关吧！</div>
+                <div class="question-box">
+                    <div class="q-label">📝 第 1 题</div>
+                    <div class="q-text" id="questionText">9 + 6 = ?</div>
+                    <div class="q-hint">💡 小提示：可以先用小棒摆一摆哦！</div>
+                </div>
+                <div class="options-grid" id="optionsContainer">
+                    <button class="option-btn" data-value="13">13</button>
+                    <button class="option-btn" data-value="14">14</button>
+                    <button class="option-btn" data-value="15">15</button>
+                    <button class="option-btn" data-value="16">16</button>
+                </div>
+                <div class="feedback-area" id="feedbackArea">
+                    <span style="opacity:0.5;">👆 选择一个答案</span>
+                </div>
+                <div class="text-center mt-8">
+                    <button class="btn-primary" id="nextQuestionBtn" style="padding:10px 28px;font-size:15px;">下一题 →</button>
+                </div>
+            </div>
+
+            <!-- ========== 知识课堂 ========== -->
+            <div class="page" data-page="knowledge">
+                <div class="page-title">📖 知识课堂</div>
+                <div class="subtitle">点击卡片展开学习小知识 ✨</div>
+                <div class="knowledge-grid">
+                    <div class="knowledge-item" onclick="toggleKnowledge(this)">
+                        <span class="ki-icon">➕</span>
+                        <div class="ki-content">
+                            <div class="ki-title">20以内加法</div>
+                            <div class="ki-desc">凑十法 · 进位加法</div>
+                        </div>
+                        <span class="ki-arrow">▾</span>
+                    </div>
+                    <div class="knowledge-detail">
+                        <strong>凑十法：</strong> 9 + 6 = 9 + 1 + 5 = 10 + 5 = 15<br>
+                        🧠 把 6 拆成 1 和 5，先凑成 10，再加剩下的。
+                    </div>
+                    <div class="knowledge-item" onclick="toggleKnowledge(this)">
+                        <span class="ki-icon">🔷</span>
+                        <div class="ki-content">
+                            <div class="ki-title">认识图形</div>
+                            <div class="ki-desc">长方形 · 正方形 · 三角形</div>
+                        </div>
+                        <span class="ki-arrow">▾</span>
+                    </div>
+                    <div class="knowledge-detail">
+                        <strong>📐 长方形：</strong> 对边相等，四个角都是直角。<br>
+                        <strong>📐 正方形：</strong> 四条边都相等，四个角都是直角。<br>
+                        <strong>📐 三角形：</strong> 有三条边，三个角。
+                    </div>
+                    <div class="knowledge-item" onclick="toggleKnowledge(this)">
+                        <span class="ki-icon">➖</span>
+                        <div class="ki-content">
+                            <div class="ki-title">10以内减法</div>
+                            <div class="ki-desc">破十法 · 退位减法</div>
+                        </div>
+                        <span class="ki-arrow">▾</span>
+                    </div>
+                    <div class="knowledge-detail">
+                        <strong>破十法：</strong> 13 - 5 = 10 - 5 + 3 = 5 + 3 = 8<br>
+                        🧠 从 10 里面减，再加上个位的数。
+                    </div>
+                    <div class="knowledge-item" onclick="toggleKnowledge(this)">
+                        <span class="ki-icon">🧮</span>
+                        <div class="ki-content">
+                            <div class="ki-title">数位与计数</div>
+                            <div class="ki-desc">个位 · 十位 · 百位</div>
+                        </div>
+                        <span class="ki-arrow">▾</span>
+                    </div>
+                    <div class="knowledge-detail">
+                        <strong>📊 数位：</strong> 从右往左依次是个位、十位、百位。<br>
+                        例如：<strong>25</strong> 表示 2 个十和 5 个一。
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 练习乐园 (多级页面) ========== -->
+            <div class="page" data-page="practice">
+                <div class="page-title">✏️ 练习乐园</div>
+                <!-- 难度选择视图 -->
+                <div id="practiceLevelView">
+                    <div class="subtitle">选择难度，开始挑战！</div>
+                    <div class="practice-level-grid">
+                        <div class="practice-level-card" onclick="selectPracticeLevel('beginner')">
+                            <span class="level-icon">🌱</span>
+                            <div class="level-name">初级</div>
+                            <div class="level-desc">10以内加减</div>
+                        </div>
+                        <div class="practice-level-card" onclick="selectPracticeLevel('intermediate')">
+                            <span class="level-icon">🌟</span>
+                            <div class="level-name">中级</div>
+                            <div class="level-desc">20以内加减</div>
+                        </div>
+                        <div class="practice-level-card" onclick="selectPracticeLevel('advanced')">
+                            <span class="level-icon">🔥</span>
+                            <div class="level-name">高级</div>
+                            <div class="level-desc">100以内混合</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px;">
+                        💡 每个难度包含 10 道随机题目
+                    </div>
+                </div>
+                <!-- 题目视图（初始隐藏） -->
+                <div id="practiceQuestionView" style="display:none;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <button class="btn-back-small" onclick="backToPracticeLevel()">← 返回选级</button>
+                        <span style="color:#fff;font-weight:600;font-size:16px;" id="practiceLevelLabel">初级</span>
+                    </div>
+                    <div class="glass-card" style="margin:4px 0 12px;">
+                        <div style="display:flex;justify-content:space-between;color:rgba(255,255,255,0.8);font-size:14px;">
+                            <span>📝 第 <span id="practiceIndex">1</span>/<span id="practiceTotal">10</span> 题</span>
+                            <span>⭐ 得分：<span id="practiceScore" style="color:#fdcb6e;font-weight:700;">0</span></span>
+                        </div>
+                    </div>
+                    <div class="practice-question" id="practiceQuestion">8 + 3 = ?</div>
+                    <div class="practice-options" id="practiceOptions">
+                        <!-- 动态生成 -->
+                    </div>
+                    <div class="text-center mt-12">
+                        <button class="btn-primary btn-success" id="practiceNextBtn" style="padding:10px 28px;font-size:15px;">下一题 →</button>
+                    </div>
+                    <div id="practiceResult" style="text-align:center;margin-top:8px;font-size:15px;color:rgba(255,255,255,0.7);"></div>
+                </div>
+            </div>
+
+            <!-- ========== 数学游戏 ========== -->
+            <div class="page" data-page="game">
+                <div class="page-header">
+                    <button class="btn-back" onclick="navigateTo('home')">← 返回</button>
+                    <div class="header-title">🎯 数学游戏</div>
+                </div>
+                <div class="subtitle">连连看 · 点击两张相同的卡片配对消除！</div>
+                <div class="game-score">
+                    🎯 配对：<strong id="matchCount">0</strong> / 6 &nbsp;|&nbsp; ⭐ 尝试：<span id="attemptCount">0</span>
+                </div>
+                <div class="game-grid" id="gameGrid"></div>
+                <div class="text-center mt-8">
+                    <button class="btn-primary" id="resetGameBtn" style="padding:8px 24px;font-size:14px;">🔄 重新洗牌</button>
+                </div>
+                <div id="gameMessage" style="text-align:center;margin-top:8px;font-size:15px;color:rgba(255,255,255,0.6);">💡 直接点击两张相同图案的卡片即可配对</div>
+            </div>
+
+            <!-- ========== 成就 ========== -->
+            <div class="page" data-page="achievement">
+                <div class="page-title">🏅 我的成就</div>
+                <div class="subtitle">继续努力，解锁更多徽章！</div>
+                <div class="achievement-grid" id="achievementGrid">
+                    <div class="achieve-item locked"><span class="ach-icon">⭐</span><div class="ach-name">星星收集者</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">🏆</span><div class="ach-name">闯关新手</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">📅</span><div class="ach-name">连续3天</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">➕</span><div class="ach-name">加法大师</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">🔷</span><div class="ach-name">图形达人</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">📝</span><div class="ach-name">百题斩</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">📆</span><div class="ach-name">连续7天</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">🌟</span><div class="ach-name">数学之星</div></div>
+                    <div class="achieve-item locked"><span class="ach-icon">👑</span><div class="ach-name">完美通关</div></div>
+                </div>
+                <div class="glass-card" style="margin-top:12px;text-align:center;">
+                    <div style="color:rgba(255,255,255,0.7);font-size:14px;">
+                        🌟 已解锁 <span id="unlockCount" style="color:#fdcb6e;font-weight:700;">0</span> / 9 个成就
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 家长中心 ========== -->
+            <div class="page" data-page="parent">
+                <div class="page-title">👨‍👩‍👦 家长中心</div>
+                <div class="subtitle">管理学习设置，查看学习报告</div>
+                <div class="parent-card">
+                    <div class="pc-title">📊 学习报告</div>
+                    <div class="pc-desc" id="reportDesc">本周学习时长：0 小时 · 完成 0 个关卡</div>
+                    <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;">
+                        <span style="background:rgba(255,255,255,0.06);padding:4px 12px;border-radius:40px;color:rgba(255,255,255,0.7);font-size:12px;" id="accuracyDisplay">✅ 正确率 0%</span>
+                        <span style="background:rgba(255,255,255,0.06);padding:4px 12px;border-radius:40px;color:rgba(255,255,255,0.7);font-size:12px;" id="starsDisplay">⭐ 获得 0 颗星</span>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="pc-title">🔔 学习提醒</div>
+                    <div class="pc-desc">每日学习 20 分钟，养成好习惯！</div>
+                    <div class="toggle-switch">
+                        <span style="color:rgba(255,255,255,0.6);font-size:13px;">开启提醒</span>
+                        <div class="toggle-track active" id="reminderToggle" onclick="toggleSwitch(this)">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="pc-title">🎯 学习目标</div>
+                    <div class="pc-desc" id="goalDesc">本周目标：完成 10 个闯关 · 已达成 0 个</div>
+                    <div class="progress-track" style="margin-top:6px;height:6px;">
+                        <div class="progress-fill" id="goalProgress" style="width:0%;"></div>
+                    </div>
+                </div>
+                <div class="parent-card">
+                    <div class="pc-title">📱 家长控制</div>
+                    <div class="pc-desc" id="durationDisplay">当前每日时长：未设置</div>
+                    <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
+                        <button class="btn-primary" style="padding:6px 16px;font-size:13px;background:rgba(255,255,255,0.10);box-shadow:none;" onclick="window.setDuration()">⏰ 设置时长</button>
+                        <button class="btn-primary" style="padding:6px 16px;font-size:13px;background:rgba(255,255,255,0.10);box-shadow:none;" onclick="navigateTo('report')">📖 查看报告</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 报告页面 ========== -->
+            <div class="page" data-page="report">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                    <button class="btn-back" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:40px;font-size:14px;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(4px);" onclick="navigateTo('parent')">← 返回</button>
+                    <span style="color:#fff;font-size:22px;font-weight:700;">📄 学习报告</span>
+                </div>
+                <div class="glass-card" id="reportContent" style="margin-bottom:16px;">
+                    <!-- 由 JavaScript 动态填充 -->
+                </div>
+                <div class="text-center">
+                    <button class="btn-primary" onclick="window.generateReport()" style="padding:12px 32px;">📥 导出报告</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== 底部导航 ===== -->
+        <nav class="bottom-nav" id="bottomNav">
+            <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-item" data-page="knowledge" onclick="navigateTo('knowledge')">
+                <span class="nav-icon">📖</span>
+                <span class="nav-label">知识</span>
+            </button>
+            <button class="nav-item" data-page="practice" onclick="navigateTo('practice')">
+                <span class="nav-icon">✏️</span>
+                <span class="nav-label">练习</span>
+            </button>
+            <button class="nav-item" data-page="achievement" onclick="navigateTo('achievement')">
+                <span class="nav-icon">🏅</span>
+                <span class="nav-label">成就</span>
+            </button>
+            <button class="nav-item" data-page="parent" onclick="navigateTo('parent')">
+                <span class="nav-icon">👨‍👩‍👦</span>
+                <span class="nav-label">家长</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <script>
+        // ============================================================
+        //  全局状态
+        // ============================================================
+        const state = {
+            currentPage: 'home',
+            stars: 0,
+            levels: 0,
+            days: 0,
+            progress: 0,
+            dailyDuration: null,
+
+            // 闯关（每日挑战）
+            challengeIndex: 0,
+            challengeQuestions: [
+                { q: '9 + 6 = ?', options: ['13', '14', '15', '16'], answer: '15',
+                hint: '💡 凑十法：9+1=10，6-1=5，10+5=15' },
+                { q: '7 + 8 = ?', options: ['14', '15', '16', '17'], answer: '15',
+                hint: '💡 凑十法：7+3=10，8-3=5，10+5=15' },
+                { q: '6 + 5 = ?', options: ['10', '11', '12', '13'], answer: '11',
+                hint: '💡 凑十法：6+4=10，5-4=1，10+1=11' },
+                { q: '8 + 9 = ?', options: ['15', '16', '17', '18'], answer: '17',
+                hint: '💡 凑十法：8+2=10，9-2=7，10+7=17' },
+                { q: '5 + 7 = ?', options: ['11', '12', '13', '14'], answer: '12',
+                hint: '💡 凑十法：5+5=10，7-5=2，10+2=12' },
+            ],
+
+            // 练习乐园（多级）
+            practiceLevel: 'beginner', // 'beginner', 'intermediate', 'advanced'
+            practiceQuestions: [],
+            practiceIndex: 0,
+            practiceScore: 0,
+            practiceTotal: 10,
+            practiceAnswered: false,
+
+            gameCards: [],
+            gameSelected: null,
+            gameMatched: 0,
+            gameAttempts: 0,
+            gameLocked: false,
+        };
+
+        // ============================================================
+        //  核心导航
+        // ============================================================
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.querySelector(`.page[data-page="${pageId}"]`);
+            if (target) target.classList.add('active');
+
+            if (pageId !== 'report') {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const navBtn = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+                if (navBtn) navBtn.classList.add('active');
+            } else {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            }
+
+            state.currentPage = pageId;
+            const scrollContainer = document.getElementById('contentScroll');
+            if (scrollContainer) scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+
+            target.style.animation = 'none';
+            requestAnimationFrame(() => {
+                target.style.animation = 'pageFadeIn 0.45s ease forwards';
+            });
+
+            if (pageId === 'game') initGame();
+            if (pageId === 'challenge') renderChallenge();
+            if (pageId === 'parent') updateParentUI();
+            if (pageId === 'report') updateReportPage();
+            if (pageId === 'practice') {
+                // 每次进入练习页面，默认显示难度选择
+                document.getElementById('practiceLevelView').style.display = 'block';
+                document.getElementById('practiceQuestionView').style.display = 'none';
+            }
+        }
+        window.navigateTo = navigateTo;
+
+        // ============================================================
+        //  练习乐园 - 多级页面控制
+        // ============================================================
+        function selectPracticeLevel(level) {
+            state.practiceLevel = level;
+            state.practiceIndex = 0;
+            state.practiceScore = 0;
+            state.practiceAnswered = false;
+
+            // 生成题目
+            state.practiceQuestions = generatePracticeQuestions(level, state.practiceTotal);
+
+            // 隐藏选级，显示题目
+            document.getElementById('practiceLevelView').style.display = 'none';
+            document.getElementById('practiceQuestionView').style.display = 'block';
+
+            // 更新标签
+            const labels = { beginner: '🌱 初级', intermediate: '🌟 中级', advanced: '🔥 高级' };
+            document.getElementById('practiceLevelLabel').textContent = labels[level] || '初级';
+
+            renderPracticeQuestion();
+        }
+
+        function backToPracticeLevel() {
+            document.getElementById('practiceQuestionView').style.display = 'none';
+            document.getElementById('practiceLevelView').style.display = 'block';
+        }
+
+        function generatePracticeQuestions(level, count) {
+            const questions = [];
+            for (let i = 0; i < count; i++) {
+                let a, b, op, answer, options;
+                switch (level) {
+                    case 'beginner':
+                        a = Math.floor(Math.random() * 9) + 1;
+                        b = Math.floor(Math.random() * 9) + 1;
+                        op = Math.random() > 0.5 ? '+' : '-';
+                        if (op === '-') {
+                            // 确保结果非负
+                            if (a < b)[a, b] = [b, a];
+                        }
+                        answer = op === '+' ? a + b : a - b;
+                        // 生成选项
+                        options = generateOptions(answer, 1, 10);
+                        break;
+                    case 'intermediate':
+                        a = Math.floor(Math.random() * 18) + 1;
+                        b = Math.floor(Math.random() * 18) + 1;
+                        op = Math.random() > 0.5 ? '+' : '-';
+                        if (op === '-') {
+                            if (a < b)[a, b] = [b, a];
+                        }
+                        answer = op === '+' ? a + b : a - b;
+                        options = generateOptions(answer, 1, 20);
+                        break;
+                    case 'advanced':
+                        a = Math.floor(Math.random() * 90) + 10;
+                        b = Math.floor(Math.random() * 90) + 10;
+                        op = Math.random() > 0.5 ? '+' : '-';
+                        if (op === '-') {
+                            if (a < b)[a, b] = [b, a];
+                        }
+                        answer = op === '+' ? a + b : a - b;
+                        options = generateOptions(answer, 10, 100);
+                        break;
+                }
+                questions.push({
+                    q: `${a} ${op} ${b} = ?`,
+                    options: options,
+                    answer: String(answer)
+                });
+            }
+            return questions;
+        }
+
+        function generateOptions(correct, min, max) {
+            let opts = new Set();
+            opts.add(correct);
+            let attempts = 0;
+            while (opts.size < 4 && attempts < 1000) {
+                let offset = Math.floor(Math.random() * (max - min + 1)) + min;
+                let candidate = correct + offset;
+                if (candidate >= min && candidate <= max && !opts.has(candidate)) {
+                    opts.add(candidate);
+                }
+                // 也尝试负偏移
+                candidate = correct - offset;
+                if (candidate >= min && candidate <= max && !opts.has(candidate)) {
+                    opts.add(candidate);
+                }
+                attempts++;
+            }
+            // 如果还是不够，补一些随机数
+            while (opts.size < 4) {
+                let r = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (!opts.has(r)) opts.add(r);
+            }
+            // 打乱
+            let arr = Array.from(opts);
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr.map(String);
+        }
+
+        function renderPracticeQuestion() {
+            const data = state.practiceQuestions[state.practiceIndex];
+            if (!data) {
+                // 全部完成
+                document.getElementById('practiceQuestion').textContent = '🎉 练习完成！';
+                document.getElementById('practiceOptions').innerHTML = '';
+                document.getElementById('practiceNextBtn').style.display = 'none';
+                document.getElementById('practiceResult').textContent =
+                    `🏆 你的得分：${state.practiceScore} / ${state.practiceQuestions.length}`;
+                if (state.practiceScore === state.practiceQuestions.length) {
+                    launchConfetti();
+                    document.getElementById('practiceResult').innerHTML += ' 🌟 完美通关！';
+                    showToast('🎉 练习全部完成！');
+                }
+                updateProgress();
+                return;
+            }
+
+            document.getElementById('practiceQuestion').textContent = data.q;
+            document.getElementById('practiceIndex').textContent = state.practiceIndex + 1;
+            document.getElementById('practiceTotal').textContent = state.practiceQuestions.length;
+            document.getElementById('practiceScore').textContent = state.practiceScore;
+            document.getElementById('practiceResult').textContent = '';
+
+            const container = document.getElementById('practiceOptions');
+            container.innerHTML = '';
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'practice-opt';
+                btn.textContent = opt;
+                btn.dataset.value = opt;
+                btn.onclick = () => handlePracticeAnswer(btn, opt, data.answer);
+                container.appendChild(btn);
+            });
+
+            state.practiceAnswered = false;
+            document.getElementById('practiceNextBtn').style.display = 'inline-block';
+            document.getElementById('practiceNextBtn').onclick = () => {
+                if (!state.practiceAnswered) {
+                    showToast('💡 请先回答当前题目！');
+                    return;
+                }
+                state.practiceIndex++;
+                renderPracticeQuestion();
+            };
+        }
+
+        function handlePracticeAnswer(btn, value, correct) {
+            if (state.practiceAnswered) return;
+            state.practiceAnswered = true;
+
+            const allBtns = document.querySelectorAll('.practice-opt');
+            const isCorrect = value === correct;
+
+            if (isCorrect) {
+                btn.classList.add('selected-correct');
+                state.practiceScore += 1;
+                document.getElementById('practiceScore').textContent = state.practiceScore;
+                state.stars += 1;
+                document.getElementById('starCount').textContent = state.stars;
+                updateProgress();
+                createStarBurst(btn, '⭐');
+                document.getElementById('practiceResult').textContent = '✅ 答对啦！ +1分';
+                document.getElementById('practiceResult').style.color = '#00B894';
+            } else {
+                btn.classList.add('selected-wrong');
+                const correctBtn = Array.from(allBtns).find(b => b.dataset.value === correct);
+                if (correctBtn) correctBtn.classList.add('show-correct');
+                document.getElementById('practiceResult').textContent = `❌ 正确答案是 ${correct}`;
+                document.getElementById('practiceResult').style.color = '#FF6B6B';
+            }
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+        }
+
+        // ============================================================
+        //  闯关逻辑 (每日挑战)
+        // ============================================================
+        function renderChallenge() {
+            const data = state.challengeQuestions[state.challengeIndex];
+            if (!data) {
+                if (!state._challengeCompleted) {
+                    state._challengeCompleted = true;
+                    state.stars += 5;
+                    document.getElementById('starCount').textContent = state.stars;
+                    updateProgress();
+                    document.getElementById('questionText').textContent = '🎉 全部通关！';
+                    document.getElementById('optionsContainer').innerHTML = '';
+                    document.getElementById('feedbackArea').innerHTML =
+                        `<span style="color:#fdcb6e;font-size:20px;">🏆 太棒了！你完成了所有闯关！<br>⭐ 额外获得 5 颗星星！</span>`;
+                    document.getElementById('nextQuestionBtn').style.display = 'none';
+                    launchConfetti();
+                    showToast('🎉 恭喜完成所有闯关！获得 5 星奖励！');
+                } else {
+                    document.getElementById('questionText').textContent = '🎉 全部通关！';
+                    document.getElementById('optionsContainer').innerHTML = '';
+                    document.getElementById('feedbackArea').innerHTML =
+                        `<span style="color:#fdcb6e;font-size:20px;">🏆 太棒了！你完成了所有闯关！<br>⭐ 额外获得 5 颗星星！</span>`;
+                    document.getElementById('nextQuestionBtn').style.display = 'none';
+                }
+                return;
+            }
+
+            document.getElementById('questionText').textContent = data.q;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.dataset.value = opt;
+                btn.onclick = () => handleChallengeAnswer(btn, opt, data.answer);
+                container.appendChild(btn);
+            });
+
+            document.getElementById('feedbackArea').innerHTML = `<span style="opacity:0.5;">👆 选择一个答案</span>`;
+            document.getElementById('nextQuestionBtn').style.display = 'inline-block';
+            document.getElementById('nextQuestionBtn').onclick = () => {
+                state.challengeIndex++;
+                renderChallenge();
+            };
+
+            const total = state.challengeQuestions.length;
+            const current = state.challengeIndex + 1;
+            const titleSpan = document.querySelector('.page-header .header-title span');
+            if (titleSpan) titleSpan.textContent = `第 ${current} / ${total} 关`;
+        }
+
+        function handleChallengeAnswer(btn, value, correct) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            if (allBtns.some(b => b.classList.contains('correct') || b.classList.contains('wrong'))) return;
+
+            const feedback = document.getElementById('feedbackArea');
+            const isCorrect = value === correct;
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedback.innerHTML = `<span class="fb-emoji">🎉</span> 答对啦！+1 ⭐`;
+                state.stars += 1;
+                state.levels += 1;
+                document.getElementById('starCount').textContent = state.stars;
+                document.getElementById('levelCount').textContent = state.levels;
+                updateProgress();
+                createStarBurst(btn, '⭐');
+                setTimeout(() => launchConfetti(), 200);
+            } else {
+                btn.classList.add('wrong');
+                const correctBtn = Array.from(allBtns).find(b => b.dataset.value === correct);
+                if (correctBtn) correctBtn.classList.add('show-correct');
+                feedback.innerHTML =
+                    `<span class="fb-emoji">😅</span> 再想想哦！正确答案是 ${correct} <br><span style="font-size:13px;opacity:0.7;">${state.challengeQuestions[state.challengeIndex].hint}</span>`;
+            }
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+        }
+
+        // ============================================================
+        //  知识课堂
+        // ============================================================
+        function toggleKnowledge(el) {
+            const detail = el.nextElementSibling;
+            if (detail && detail.classList.contains('knowledge-detail')) {
+                const isOpen = detail.classList.contains('open');
+                document.querySelectorAll('.knowledge-detail.open').forEach(d => d.classList.remove('open'));
+                if (!isOpen) {
+                    detail.classList.add('open');
+                    detail.style.animation = 'none';
+                    requestAnimationFrame(() => {
+                        detail.style.animation = 'pageFadeIn 0.3s ease forwards';
+                    });
+                    el.querySelector('.ki-arrow').style.transform = 'rotate(180deg)';
+                } else {
+                    el.querySelector('.ki-arrow').style.transform = '';
+                }
+                document.querySelectorAll('.knowledge-item .ki-arrow').forEach(a => {
+                    if (a.closest('.knowledge-item') !== el) {
+                        a.style.transform = '';
+                    }
+                });
+            }
+        }
+        window.toggleKnowledge = toggleKnowledge;
+
+        // ============================================================
+        //  进度 & 成就 更新
+        // ============================================================
+        function updateProgress() {
+            const starWeight = 50;
+            const levelWeight = 30;
+            const practiceWeight = 20;
+            const maxStars = 100;
+            const maxLevels = 5;
+            const maxPractice = 5;
+
+            const starPct = Math.min(100, (state.stars / maxStars) * 100) * (starWeight / 100);
+            const levelPct = Math.min(100, (state.levels / maxLevels) * 100) * (levelWeight / 100);
+            const practicePct = Math.min(100, (state.practiceScore / maxPractice) * 100) * (practiceWeight / 100);
+
+            const totalPct = Math.min(100, Math.floor(starPct + levelPct + practicePct));
+            state.progress = totalPct;
+
+            document.getElementById('progressPercent').textContent = totalPct + '%';
+            document.getElementById('progressFill').style.width = totalPct + '%';
+
+            updateAchievements();
+            updateParentUI();
+        }
+
+        function updateAchievements() {
+            const items = document.querySelectorAll('.achieve-item');
+            const conditions = [
+                state.stars >= 5, // 星星收集者
+                state.levels >= 1, // 闯关新手
+                state.days >= 3, // 连续3天
+                state.levels >= 5, // 加法大师
+                state.stars >= 15, // 图形达人
+                state.practiceScore >= 5, // 百题斩
+                state.days >= 7, // 连续7天
+                state.stars >= 30, // 数学之星
+                state.stars >= 50 // 完美通关
+            ];
+
+            let unlockedCount = 0;
+            items.forEach((item, index) => {
+                if (conditions[index]) {
+                    if (item.classList.contains('locked')) {
+                        item.classList.remove('locked');
+                        item.classList.add('unlocked');
+                        createStarBurst(item, '🎉');
+                        const name = item.querySelector('.ach-name')?.textContent || '成就';
+                        showToast(`🏅 解锁成就：${name}！`);
+                    }
+                    unlockedCount++;
+                } else {
+                    item.classList.add('locked');
+                    item.classList.remove('unlocked');
+                }
+            });
+            document.getElementById('unlockCount').textContent = unlockedCount;
+        }
+
+        // ============================================================
+        //  家长中心 UI 更新
+        // ============================================================
+        function updateParentUI() {
+            const totalQuestions = state.challengeQuestions.length + state.practiceQuestions.length;
+            const correctAnswers = state.levels + state.practiceScore;
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            document.getElementById('accuracyDisplay').textContent = `✅ 正确率 ${accuracy}%`;
+            document.getElementById('starsDisplay').textContent = `⭐ 获得 ${state.stars} 颗星`;
+            document.getElementById('reportDesc').textContent =
+                `本周学习时长：${state.dailyDuration ? Math.round(state.dailyDuration/60*10)/10 : 0} 小时 · 完成 ${state.levels} 个关卡`;
+
+            const goalProgress = Math.min(100, (state.levels / 10) * 100);
+            document.getElementById('goalDesc').textContent =
+                `本周目标：完成 10 个闯关 · 已达成 ${state.levels} 个`;
+            document.getElementById('goalProgress').style.width = goalProgress + '%';
+
+            document.getElementById('durationDisplay').textContent =
+                state.dailyDuration ? `当前每日时长：${state.dailyDuration} 分钟` : '当前每日时长：未设置';
+        }
+
+        // ============================================================
+        //  家长功能
+        // ============================================================
+        function setDuration() {
+            try {
+                const input = prompt('请输入每日学习时长（分钟）：', state.dailyDuration || '20');
+                if (input === null) return;
+                const minutes = parseInt(input);
+                if (isNaN(minutes) || minutes <= 0) {
+                    alert('请输入有效的正整数！');
+                    return;
+                }
+                state.dailyDuration = minutes;
+                updateParentUI();
+                showToast(`⏰ 每日时长已设置为 ${minutes} 分钟`);
+            } catch (e) {
+                alert('设置失败：' + e.message);
+                console.error(e);
+            }
+        }
+        window.setDuration = setDuration;
+
+        function generateReport() {
+            try {
+                console.log('📄 开始生成报告...');
+                const totalQuestions = state.challengeQuestions.length + state.practiceQuestions.length;
+                const correctAnswers = state.levels + state.practiceScore;
+                const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+                const now = new Date().toLocaleString('zh-CN');
+
+                const report = `
+        📊 学习报告 - ${now}
+        ==============================
+        ⭐ 星星总数：${state.stars}
+        🏆 闯关成功：${state.levels} / ${state.challengeQuestions.length}
+        ✏️ 练习得分：${state.practiceScore} / ${state.practiceQuestions.length}
+        📈 综合进度：${state.progress}%
+        ✅ 总正确率：${accuracy}%
+        ⏰ 每日时长：${state.dailyDuration ? state.dailyDuration + ' 分钟' : '未设置'}
+        📅 连续天数：${state.days} 天
+        ==============================
+        加油，继续努力！ 🚀
+                `;
+
+                const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                const filename = `学习报告_${new Date().toISOString().slice(0,10)}.txt`;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(link.href), 3000);
+
+                console.log('✅ 报告已导出：' + filename);
+                showToast(`📄 报告 "${filename}" 已导出！`);
+            } catch (e) {
+                alert('导出报告失败，请重试：' + e.message);
+                console.error('❌ 导出错误：', e);
+            }
+        }
+        window.generateReport = generateReport;
+
+        // ============================================================
+        //  更新报告页面
+        // ============================================================
+        function updateReportPage() {
+            const container = document.getElementById('reportContent');
+            const totalQuestions = state.challengeQuestions.length + state.practiceQuestions.length;
+            const correctAnswers = state.levels + state.practiceScore;
+            const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+            const now = new Date().toLocaleString('zh-CN');
+
+            const items = [
+                { label: '📅 报告生成时间', value: now },
+                { label: '⭐ 星星总数', value: state.stars },
+                { label: '🏆 闯关成功', value: `${state.levels} / ${state.challengeQuestions.length}` },
+                { label: '✏️ 练习得分', value: `${state.practiceScore} / ${state.practiceQuestions.length}` },
+                { label: '📈 综合进度', value: `${state.progress}%` },
+                { label: '✅ 总正确率', value: `${accuracy}%` },
+                { label: '⏰ 每日时长', value: state.dailyDuration ? `${state.dailyDuration} 分钟` : '未设置' },
+                { label: '📅 连续天数', value: `${state.days} 天` },
+            ];
+
+            let html = '<div style="padding:4px 0;">';
+            items.forEach(item => {
+                html += `
+                    <div class="report-item">
+                        <span class="label">${item.label}</span>
+                        <span class="value">${item.value}</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        //  首页交互
+        // ============================================================
+        document.getElementById('avatarBtn')?.addEventListener('click', function() {
+            this.style.transform = 'scale(0.85) rotate(-10deg)';
+            setTimeout(() => { this.style.transform = ''; }, 400);
+            createStarBurst(this, '🌟');
+            setTimeout(() => showToast('🧒 你好呀！继续加油哦！'), 300);
+        });
+
+        document.querySelectorAll('.stat-item, .entry-card, .continue-item').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (!this.classList.contains('stat-item')) {
+                    createStarBurst(this, '⭐');
+                }
+            });
+        });
+
+        // ============================================================
+        //  数学游戏
+        // ============================================================
+        function initGame() {
+            const pairs = [
+                { id: 1, emoji: '🐱' },
+                { id: 2, emoji: '🐶' },
+                { id: 3, emoji: '🐰' },
+                { id: 4, emoji: '🦊' },
+                { id: 5, emoji: '🐼' },
+                { id: 6, emoji: '🐨' },
+            ];
+
+            let deck = [];
+            pairs.forEach(p => {
+                deck.push({ ...p, key: `${p.id}-a` });
+                deck.push({ ...p, key: `${p.id}-b` });
+            });
+            shuffle(deck);
+
+            state.gameCards = deck;
+            state.gameSelected = null;
+            state.gameMatched = 0;
+            state.gameAttempts = 0;
+            state.gameLocked = false;
+
+            renderGame();
+            document.getElementById('gameMessage').textContent = '💡 点击两张相同图案的卡片配对消除！';
+        }
+
+        function renderGame() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            state.gameCards.forEach((card, index) => {
+                const div = document.createElement('div');
+                div.className = 'game-card';
+                div.dataset.index = index;
+                div.dataset.id = card.id;
+                div.innerHTML = `<span class="card-emoji">${card.emoji}</span>`;
+                div.onclick = () => handleGameClick(index);
+                grid.appendChild(div);
+            });
+
+            document.getElementById('matchCount').textContent = state.gameMatched;
+            document.getElementById('attemptCount').textContent = state.gameAttempts;
+        }
+
+        function handleGameClick(index) {
+            if (state.gameLocked) return;
+            const el = document.querySelectorAll('.game-card')[index];
+            if (el.classList.contains('matched')) return;
+
+            if (state.gameSelected === index) {
+                el.classList.remove('selected');
+                state.gameSelected = null;
+                return;
+            }
+
+            if (state.gameSelected === null) {
+                el.classList.add('selected');
+                state.gameSelected = index;
+                return;
+            }
+
+            const firstIndex = state.gameSelected;
+            const firstEl = document.querySelectorAll('.game-card')[firstIndex];
+            const firstCard = state.gameCards[firstIndex];
+            const secondCard = state.gameCards[index];
+
+            if (firstCard.id === secondCard.id) {
+                firstEl.classList.add('matched');
+                el.classList.add('matched');
+                firstEl.classList.remove('selected');
+                el.classList.remove('selected');
+                state.gameMatched += 1;
+                document.getElementById('matchCount').textContent = state.gameMatched;
+                state.gameSelected = null;
+
+                createStarBurst(el, '✨');
+                createStarBurst(firstEl, '✨');
+
+                if (state.gameMatched === 6) {
+                    document.getElementById('gameMessage').textContent = '🎉 太棒了！你配对了所有卡片！ 🎉';
+                    launchConfetti();
+                    state.stars += 5;
+                    document.getElementById('starCount').textContent = state.stars;
+                    updateProgress();
+                    showToast('🎮 游戏完成！获得 5 颗星！');
+                } else {
+                    document.getElementById('gameMessage').textContent = '✅ 配对成功！继续加油！';
+                }
+            } else {
+                state.gameAttempts += 1;
+                document.getElementById('attemptCount').textContent = state.gameAttempts;
+                firstEl.classList.add('wrong');
+                el.classList.add('wrong');
+                document.getElementById('gameMessage').textContent = '❌ 不匹配，再试试！';
+
+                state.gameLocked = true;
+                setTimeout(() => {
+                    firstEl.classList.remove('selected', 'wrong');
+                    el.classList.remove('selected', 'wrong');
+                    state.gameSelected = null;
+                    state.gameLocked = false;
+                    document.getElementById('gameMessage').textContent = '💡 点击两张相同图案的卡片配对消除！';
+                }, 600);
+            }
+        }
+
+        document.getElementById('resetGameBtn')?.addEventListener('click', () => {
+            initGame();
+            document.getElementById('gameMessage').textContent = '🔄 重新洗牌啦！开始配对吧！';
+        });
+
+        // ============================================================
+        //  家长中心 - 开关
+        // ============================================================
+        function toggleSwitch(el) {
+            el.classList.toggle('active');
+            const isOn = el.classList.contains('active');
+            const label = el.parentElement.querySelector('span');
+            if (label) label.textContent = isOn ? '开启提醒' : '关闭提醒';
+            createStarBurst(el, isOn ? '🔔' : '🔕');
+        }
+        window.toggleSwitch = toggleSwitch;
+
+        // ============================================================
+        //  工具函数
+        // ============================================================
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('celebrationToast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            toast.style.animation = 'none';
+            requestAnimationFrame(() => {
+                toast.style.animation = 'pageFadeIn 0.5s ease forwards';
+            });
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function createStarBurst(anchor, emoji = '⭐') {
+            const rect = anchor.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            for (let i = 0; i < 6; i++) {
+                const el = document.createElement('div');
+                el.className = 'star-burst';
+                el.textContent = emoji;
+                const angle = (i / 6) * Math.PI * 2 + Math.random() * 0.5;
+                const dist = 60 + Math.random() * 80;
+                el.style.left = cx + 'px';
+                el.style.top = cy + 'px';
+                el.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+                el.style.setProperty('--ty', Math.sin(angle) * dist - 40 + 'px');
+                el.style.fontSize = (18 + Math.random() * 24) + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1000);
+            }
+        }
+
+        function launchConfetti() {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            const colors = ['#fdcb6e', '#f093fb', '#6C5CE7', '#00B894', '#4facfe', '#FD79A8', '#fff'];
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.top = '-10px';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.width = (5 + Math.random() * 8) + 'px';
+                piece.style.height = (5 + Math.random() * 8) + 'px';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                piece.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+                piece.style.animationDelay = (Math.random() * 0.8) + 's';
+                container.appendChild(piece);
+            }
+            document.body.appendChild(container);
+            setTimeout(() => container.remove(), 4000);
+        }
+
+        // ============================================================
+        //  初始化
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化练习题目（默认初级）
+            state.practiceQuestions = generatePracticeQuestions('beginner', 10);
+
+            // 初始显示
+            document.getElementById('practiceLevelView').style.display = 'block';
+            document.getElementById('practiceQuestionView').style.display = 'none';
+
+            // 其他初始化
+            renderChallenge();
+            initGame();
+
+            document.getElementById('starCount').textContent = '0';
+            document.getElementById('levelCount').textContent = '0';
+            document.getElementById('dayCount').textContent = '0';
+            document.getElementById('progressPercent').textContent = '0%';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('unlockCount').textContent = '0';
+
+            updateAchievements();
+            updateParentUI();
+
+            console.log('🌈 小学数学乐园已启动，练习多级，返回按钮优化，每日挑战已改名！');
+        });
+
+        // 快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') navigateTo('home');
+            if (e.key === '2') navigateTo('knowledge');
+            if (e.key === '3') navigateTo('practice');
+            if (e.key === '4') navigateTo('achievement');
+            if (e.key === '5') navigateTo('parent');
+            if (e.key === 'r' || e.key === 'R') navigateTo('report');
+            if (e.key === 'c' || e.key === 'C') launchConfetti();
+        });
+        console.log('⌨️ 快捷键: 1-首页 2-知识 3-练习 4-成就 5-家长 R-报告 C-庆祝');
+    </script>
+
+</body>
+</html>
