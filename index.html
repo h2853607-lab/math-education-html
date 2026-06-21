@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
     <title>🌈 小学数学乐园</title>
     <style>
         /* ===== 全局重置 & 基础 ===== */
@@ -32,6 +32,7 @@
         body {
             width: 100%;
             min-height: 100vh;
+            min-height: 100dvh;
             background: linear-gradient(145deg, #a8c0ff 0%, #3f2b96 50%, #f093fb 100%);
             background-attachment: fixed;
             display: flex;
@@ -89,23 +90,24 @@
             width: 100%;
             max-width: 520px;
             height: 98vh;
+            height: 98dvh;
             max-height: 98vh;
+            max-height: 98dvh;
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1.5px solid var(--glass-border);
             border-radius: var(--radius);
             box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
         }
 
+        /* ===== 内容滚动区域 ===== */
         .content-scroll {
-            flex: 1;
+            height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 20px 16px 16px;
+            padding: 20px 16px 80px; /* 底部留出导航栏空间 */
             scroll-behavior: smooth;
         }
         .content-scroll::-webkit-scrollbar {
@@ -119,8 +121,12 @@
             border-radius: 10px;
         }
 
+        /* ===== 底部导航 - 绝对定位 ===== */
         .bottom-nav {
-            flex-shrink: 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -129,6 +135,7 @@
             -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.25);
             padding: 8px 0 12px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
             border-radius: 0 0 var(--radius) var(--radius);
             z-index: 20;
             gap: 2px;
@@ -179,6 +186,7 @@
             transform: scale(1.1) translateY(-2px);
         }
 
+        /* ===== 页面通用 ===== */
         .page {
             display: none;
             animation: pageFadeIn 0.45s ease forwards;
@@ -214,7 +222,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* 页面头部：仅用于需要返回的子页面（闯关、游戏、报告） */
+        /* 页面头部 - 仅用于需要返回的子页面 */
         .page-header {
             display: flex;
             align-items: center;
@@ -257,7 +265,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* 普通页面标题（无返回按钮） */
         .page-title {
             font-size: 26px;
             font-weight: 700;
@@ -641,7 +648,7 @@
             display: block;
         }
 
-        /* ===== 练习乐园多级样式 ===== */
+        /* ===== 练习乐园多级 ===== */
         .practice-level-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -987,7 +994,6 @@
             }
         }
 
-        /* 报告页面 */
         .report-item {
             display: flex;
             justify-content: space-between;
@@ -1008,14 +1014,28 @@
             color: #fdcb6e;
         }
 
+        #celebrationToast {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(253, 203, 110, 0.20);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(253, 203, 110, 0.3);
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            animation: pageFadeIn 0.5s ease;
+            display: none;
+        }
+
         /* ===== 响应式适配 ===== */
         @media (min-width: 768px) {
             .app-container {
                 max-width: 720px;
                 height: 92vh;
+                height: 92dvh;
             }
             .content-scroll {
-                padding: 30px 28px 16px;
+                padding: 30px 28px 90px;
             }
             .game-grid {
                 grid-template-columns: repeat(4, 1fr);
@@ -1055,6 +1075,7 @@
             }
             .bottom-nav {
                 padding: 10px 0 14px;
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
                 min-height: 72px;
             }
             .practice-level-grid {
@@ -1067,9 +1088,10 @@
             .app-container {
                 max-width: 880px;
                 height: 90vh;
+                height: 90dvh;
             }
             .content-scroll {
-                padding: 36px 36px 16px;
+                padding: 36px 36px 100px;
             }
             .achievement-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -1096,7 +1118,7 @@
 
         @media (max-width: 420px) {
             .content-scroll {
-                padding: 14px 10px 10px;
+                padding: 14px 10px 76px;
             }
             .page-header .header-title {
                 font-size: 18px;
@@ -1147,8 +1169,9 @@
                 font-size: 15px;
             }
             .bottom-nav {
-                min-height: 56px;
+                min-height: 60px;
                 padding: 6px 0 10px;
+                padding-bottom: max(18px, env(safe-area-inset-bottom));
             }
             .page-header .btn-back {
                 font-size: 12px;
@@ -1179,19 +1202,6 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
-
-        #celebrationToast {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(253, 203, 110, 0.20);
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(253, 203, 110, 0.3);
-            text-align: center;
-            color: #fff;
-            font-weight: 600;
-            animation: pageFadeIn 0.5s ease;
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -1202,6 +1212,7 @@
 
     <div class="app-container" id="app">
 
+        <!-- ===== 内容滚动区域 ===== -->
         <div class="content-scroll" id="contentScroll">
 
             <!-- ========== 首页 ========== -->
@@ -1240,7 +1251,6 @@
                 </div>
 
                 <div class="entry-grid">
-                    <!-- 闯关挑战 → 每日挑战 -->
                     <div class="entry-card challenge" onclick="navigateTo('challenge')">
                         <span class="entry-icon">⚔️</span>
                         <div class="entry-name">每日挑战</div>
@@ -1368,10 +1378,9 @@
                 </div>
             </div>
 
-            <!-- ========== 练习乐园 (多级页面) ========== -->
+            <!-- ========== 练习乐园 ========== -->
             <div class="page" data-page="practice">
                 <div class="page-title">✏️ 练习乐园</div>
-                <!-- 难度选择视图 -->
                 <div id="practiceLevelView">
                     <div class="subtitle">选择难度，开始挑战！</div>
                     <div class="practice-level-grid">
@@ -1395,7 +1404,6 @@
                         💡 每个难度包含 10 道随机题目
                     </div>
                 </div>
-                <!-- 题目视图（初始隐藏） -->
                 <div id="practiceQuestionView" style="display:none;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                         <button class="btn-back-small" onclick="backToPracticeLevel()">← 返回选级</button>
@@ -1408,9 +1416,7 @@
                         </div>
                     </div>
                     <div class="practice-question" id="practiceQuestion">8 + 3 = ?</div>
-                    <div class="practice-options" id="practiceOptions">
-                        <!-- 动态生成 -->
-                    </div>
+                    <div class="practice-options" id="practiceOptions"></div>
                     <div class="text-center mt-12">
                         <button class="btn-primary btn-success" id="practiceNextBtn" style="padding:10px 28px;font-size:15px;">下一题 →</button>
                     </div>
@@ -1502,9 +1508,7 @@
                     <button class="btn-back" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:40px;font-size:14px;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(4px);" onclick="navigateTo('parent')">← 返回</button>
                     <span style="color:#fff;font-size:22px;font-weight:700;">📄 学习报告</span>
                 </div>
-                <div class="glass-card" id="reportContent" style="margin-bottom:16px;">
-                    <!-- 由 JavaScript 动态填充 -->
-                </div>
+                <div class="glass-card" id="reportContent" style="margin-bottom:16px;"></div>
                 <div class="text-center">
                     <button class="btn-primary" onclick="window.generateReport()" style="padding:12px 32px;">📥 导出报告</button>
                 </div>
@@ -1550,7 +1554,6 @@
             progress: 0,
             dailyDuration: null,
 
-            // 闯关（每日挑战）
             challengeIndex: 0,
             challengeQuestions: [
                 { q: '9 + 6 = ?', options: ['13', '14', '15', '16'], answer: '15',
@@ -1565,8 +1568,7 @@
                 hint: '💡 凑十法：5+5=10，7-5=2，10+2=12' },
             ],
 
-            // 练习乐园（多级）
-            practiceLevel: 'beginner', // 'beginner', 'intermediate', 'advanced'
+            practiceLevel: 'beginner',
             practiceQuestions: [],
             practiceIndex: 0,
             practiceScore: 0,
@@ -1610,7 +1612,6 @@
             if (pageId === 'parent') updateParentUI();
             if (pageId === 'report') updateReportPage();
             if (pageId === 'practice') {
-                // 每次进入练习页面，默认显示难度选择
                 document.getElementById('practiceLevelView').style.display = 'block';
                 document.getElementById('practiceQuestionView').style.display = 'none';
             }
@@ -1618,7 +1619,7 @@
         window.navigateTo = navigateTo;
 
         // ============================================================
-        //  练习乐园 - 多级页面控制
+        //  练习乐园 - 多级控制
         // ============================================================
         function selectPracticeLevel(level) {
             state.practiceLevel = level;
@@ -1626,14 +1627,11 @@
             state.practiceScore = 0;
             state.practiceAnswered = false;
 
-            // 生成题目
             state.practiceQuestions = generatePracticeQuestions(level, state.practiceTotal);
 
-            // 隐藏选级，显示题目
             document.getElementById('practiceLevelView').style.display = 'none';
             document.getElementById('practiceQuestionView').style.display = 'block';
 
-            // 更新标签
             const labels = { beginner: '🌱 初级', intermediate: '🌟 中级', advanced: '🔥 高级' };
             document.getElementById('practiceLevelLabel').textContent = labels[level] || '初级';
 
@@ -1654,21 +1652,15 @@
                         a = Math.floor(Math.random() * 9) + 1;
                         b = Math.floor(Math.random() * 9) + 1;
                         op = Math.random() > 0.5 ? '+' : '-';
-                        if (op === '-') {
-                            // 确保结果非负
-                            if (a < b)[a, b] = [b, a];
-                        }
+                        if (op === '-') { if (a < b)[a, b] = [b, a]; }
                         answer = op === '+' ? a + b : a - b;
-                        // 生成选项
                         options = generateOptions(answer, 1, 10);
                         break;
                     case 'intermediate':
                         a = Math.floor(Math.random() * 18) + 1;
                         b = Math.floor(Math.random() * 18) + 1;
                         op = Math.random() > 0.5 ? '+' : '-';
-                        if (op === '-') {
-                            if (a < b)[a, b] = [b, a];
-                        }
+                        if (op === '-') { if (a < b)[a, b] = [b, a]; }
                         answer = op === '+' ? a + b : a - b;
                         options = generateOptions(answer, 1, 20);
                         break;
@@ -1676,9 +1668,7 @@
                         a = Math.floor(Math.random() * 90) + 10;
                         b = Math.floor(Math.random() * 90) + 10;
                         op = Math.random() > 0.5 ? '+' : '-';
-                        if (op === '-') {
-                            if (a < b)[a, b] = [b, a];
-                        }
+                        if (op === '-') { if (a < b)[a, b] = [b, a]; }
                         answer = op === '+' ? a + b : a - b;
                         options = generateOptions(answer, 10, 100);
                         break;
@@ -1699,22 +1689,15 @@
             while (opts.size < 4 && attempts < 1000) {
                 let offset = Math.floor(Math.random() * (max - min + 1)) + min;
                 let candidate = correct + offset;
-                if (candidate >= min && candidate <= max && !opts.has(candidate)) {
-                    opts.add(candidate);
-                }
-                // 也尝试负偏移
+                if (candidate >= min && candidate <= max && !opts.has(candidate)) opts.add(candidate);
                 candidate = correct - offset;
-                if (candidate >= min && candidate <= max && !opts.has(candidate)) {
-                    opts.add(candidate);
-                }
+                if (candidate >= min && candidate <= max && !opts.has(candidate)) opts.add(candidate);
                 attempts++;
             }
-            // 如果还是不够，补一些随机数
             while (opts.size < 4) {
                 let r = Math.floor(Math.random() * (max - min + 1)) + min;
                 if (!opts.has(r)) opts.add(r);
             }
-            // 打乱
             let arr = Array.from(opts);
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -1726,7 +1709,6 @@
         function renderPracticeQuestion() {
             const data = state.practiceQuestions[state.practiceIndex];
             if (!data) {
-                // 全部完成
                 document.getElementById('practiceQuestion').textContent = '🎉 练习完成！';
                 document.getElementById('practiceOptions').innerHTML = '';
                 document.getElementById('practiceNextBtn').style.display = 'none';
@@ -1798,7 +1780,7 @@
         }
 
         // ============================================================
-        //  闯关逻辑 (每日挑战)
+        //  闯关逻辑
         // ============================================================
         function renderChallenge() {
             const data = state.challengeQuestions[state.challengeIndex];
@@ -1905,7 +1887,7 @@
         window.toggleKnowledge = toggleKnowledge;
 
         // ============================================================
-        //  进度 & 成就 更新
+        //  进度 & 成就
         // ============================================================
         function updateProgress() {
             const starWeight = 50;
@@ -1963,7 +1945,7 @@
         }
 
         // ============================================================
-        //  家长中心 UI 更新
+        //  家长中心 UI
         // ============================================================
         function updateParentUI() {
             const totalQuestions = state.challengeQuestions.length + state.practiceQuestions.length;
@@ -2007,7 +1989,6 @@
 
         function generateReport() {
             try {
-                console.log('📄 开始生成报告...');
                 const totalQuestions = state.challengeQuestions.length + state.practiceQuestions.length;
                 const correctAnswers = state.levels + state.practiceScore;
                 const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
@@ -2037,11 +2018,10 @@
                 document.body.removeChild(link);
                 setTimeout(() => URL.revokeObjectURL(link.href), 3000);
 
-                console.log('✅ 报告已导出：' + filename);
                 showToast(`📄 报告 "${filename}" 已导出！`);
             } catch (e) {
                 alert('导出报告失败，请重试：' + e.message);
-                console.error('❌ 导出错误：', e);
+                console.error(e);
             }
         }
         window.generateReport = generateReport;
@@ -2293,14 +2273,10 @@
         //  初始化
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // 初始化练习题目（默认初级）
             state.practiceQuestions = generatePracticeQuestions('beginner', 10);
-
-            // 初始显示
             document.getElementById('practiceLevelView').style.display = 'block';
             document.getElementById('practiceQuestionView').style.display = 'none';
 
-            // 其他初始化
             renderChallenge();
             initGame();
 
@@ -2314,7 +2290,7 @@
             updateAchievements();
             updateParentUI();
 
-            console.log('🌈 小学数学乐园已启动，练习多级，返回按钮优化，每日挑战已改名！');
+            console.log('🌈 小学数学乐园已启动，导航采用绝对定位，安全区域已适配。');
         });
 
         // 快捷键
